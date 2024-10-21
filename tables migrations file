@@ -1,0 +1,78 @@
+1-create categories table migrations :
+        Schema::create('categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->text('description')->nullable();
+            $table->string('image')->nullable();
+            $table->foreignId('parent_id')->nullable()->constrained('categories')->cascadeOnDelete();
+            $table->timestamp('deleted_at')->nullable();
+            $table->timestamps();
+        });
+
+
+2- create products table migrations :
+        Schema::create('products', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->text('description')->nullable();
+            $table->string('main_image');
+            $table->decimal('base_price', 8, 2);
+            $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete(); 
+            $table->integer('points');
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->timestamp('deleted_at')->nullable();
+            $table->timestamps();
+        });
+
+
+3-create product images table migrations :
+        Schema::create('product_images', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
+            $table->string('image');
+            $table->timestamp('deleted_at')->nullable();
+            $table->timestamps();
+        });
+
+
+4-create attribute table migration : 
+        Schema::create('attributes', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->timestamp('deleted_at')->nullable();
+            $table->timestamps();
+        });
+
+
+5-create variants table migration :
+        Schema::create('variants', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->foreignId('attribute_id')->constrained('attributes')->cascadeOnDelete();
+            $table->timestamp('deleted_at')->nullable();
+            $table->timestamps();
+        });
+
+
+6-create attribute product table migration :
+        Schema::create('attribute_product', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
+            $table->foreignId('attribute_id')->constrained('attributes')->cascadeOnDelete(); 
+            $table->foreignId('variant_id')->constrained('variants')->cascadeOnDelete(); 
+            $table->integer('extra_price')->nullable();
+            $table->timestamp('deleted_at')->nullable();
+            $table->timestamps();
+        });
+
+
+7-create attribute product images table mgration :
+        Schema::create('attribute_product_images', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('attribute_product_id')->constrained('attribute_product')->cascadeOnDelete();
+            $table->string('image');
+            $table->timestamp('deleted_at')->nullable();
+            $table->timestamps();
+        });
